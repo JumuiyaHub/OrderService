@@ -1,8 +1,9 @@
-package com.kiru.microservice.order.stub;
+package com.kiru.microservice.order.stubs;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 
-public class InventoryStubs {
+public class InventoryClientStub {
 
     public static void stubInventoryCall(String skuCode, Integer quantity) {
         stubFor(get(urlEqualTo("/api/inventory?skuCode=" + skuCode + "&quantity=" + quantity))
