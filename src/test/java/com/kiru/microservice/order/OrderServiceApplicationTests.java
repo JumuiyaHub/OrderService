@@ -1,6 +1,6 @@
 package com.kiru.microservice.order;
 
-import com.kiru.microservice.order.stub.InventoryStubs;
+import com.kiru.microservice.order.stubs.InventoryClientStub;
 import io.restassured.RestAssured;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,12 +37,12 @@ class OrderServiceApplicationTests {
 		String submitOrderJson = """
                 {
                      "skuCode": "OnePlus",
-				     "price": 1899.55,
-				     "quantity": 5
+                     "price": 1000,
+                     "quantity": 1
                 }
                 """;
 
-		InventoryStubs.stubInventoryCall("OnePlus", 5);
+		InventoryClientStub.stubInventoryCall("OnePlus", 1);
 		var responseBodyString = RestAssured.given()
 				.contentType("application/json")
 				.body(submitOrderJson)
