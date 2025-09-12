@@ -10,11 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    env:
-      TESTCONTAINERS_RYUK_DISABLED: true
-      TESTCONTAINERS_CHECKS_DISABLE: true
-      TESTCONTAINERS_DOCKER_IMAGE_OVERRIDE: mysql:8.0.32
-
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -26,13 +21,13 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Set up Docker for Testcontainers
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo systemctl start docker
-          sudo usermod -aG docker $USER
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v4
+        with:
+          version: v25.0.3
+
+      - name: Verify Docker
+        run: docker version
 
       - name: Build and Run Tests
-        run: |
-          ./mvnw -B clean verify -Dsurefire.forkCount=1 -Dsurefire.reuseForks=true
+        run: mvn -B clean verify
