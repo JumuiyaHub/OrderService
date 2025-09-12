@@ -10,22 +10,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: mysql
-          MYSQL_DATABASE: orderservice
-          MYSQL_USER: orderuser
-          MYSQL_PASSWORD: orderpass
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h127.0.0.1 -uroot -pmysql"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -37,19 +21,12 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Wait for MySQL
+      - name: Set up Docker for Testcontainers
         run: |
-          for i in {1..30}; do
-            if mysqladmin ping -h127.0.0.1 -P3306 -uorderuser -porderpass --silent; then
-              echo "MySQL is up!"
-              break
-            fi
-            echo "Waiting for MySQL..."
-            sleep 2
-          done
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+          sudo usermod -aG docker $USER
 
-      - name: Build with Maven
+      - name: Build and Run Tests
         run: mvn -B clean verify
-
-      - name: Run Unit Tests
-        run: mvn test
