@@ -22,11 +22,7 @@ jobs:
           cache: maven
 
       - name: Set up Docker for Testcontainers
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker.io
-          sudo systemctl start docker
-          sudo usermod -aG docker $USER
+        uses: docker/setup-docker-action@v4
 
       - name: Build and Run Tests
         run: mvn -B clean verify
