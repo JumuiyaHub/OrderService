@@ -10,6 +10,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      TESTCONTAINERS_RYUK_DISABLED: true
+      TESTCONTAINERS_CHECKS_DISABLE: true
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
@@ -22,7 +26,12 @@ jobs:
           cache: maven
 
       - name: Set up Docker for Testcontainers
-        uses: docker/setup-docker-action@v4
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo systemctl start docker
+          sudo usermod -aG docker $USER
 
-      - name: Build and Run Tests
-        run: mvn -B clean verify
+      - name: Build and Run Tests (force MySQL 8.0.32)
+        run: |
+          ./mvnw -B clean verify -Dspring.datasource.url=jdbc:tc:mysql:8.0.32:///testdb
