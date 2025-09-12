@@ -13,6 +13,7 @@ jobs:
     env:
       TESTCONTAINERS_RYUK_DISABLED: true
       TESTCONTAINERS_CHECKS_DISABLE: true
+      TESTCONTAINERS_DOCKER_IMAGE_OVERRIDE: mysql:8.0.32
 
     steps:
       - name: Checkout source
@@ -32,6 +33,6 @@ jobs:
           sudo systemctl start docker
           sudo usermod -aG docker $USER
 
-      - name: Build and Run Tests (force MySQL 8.0.32)
+      - name: Build and Run Tests
         run: |
-          ./mvnw -B clean verify -Dspring.datasource.url=jdbc:tc:mysql:8.0.32:///testdb
+          ./mvnw -B clean verify -Dsurefire.forkCount=1 -Dsurefire.reuseForks=true
